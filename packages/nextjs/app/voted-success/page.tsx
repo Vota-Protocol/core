@@ -7,20 +7,22 @@ import voteSucessAnimation from "~~/components/assets/green_tick.json";
 
 const VotedSucess = () => {
   const style = {
+    height: 150,
+    width: 150,
+  };
+  const celebrateStyle = {
     height: 400,
     width: 400,
   };
-  const celebrateStyle = {
-    height: 800,
-    width: 800,
-  };
   const searchParams = useSearchParams();
   return (
-    <div className="flex flex-col justify-center items-center relative bg-gradient-to-r from-[#181436] to-[#19244F] h-screen p-7">
-      <div className="absolute top-0 left-0 w-full h-full z-10 flex flex-col justify-center items-center">
-        <Lottie animationData={voteSucessAnimation} style={style} loop={false} />
-        <div className="font-mono flex text-3xl font-bold text-center">
-          You have successfully voted for candidate {searchParams.get("id") ?? "-1"}
+    <div className="flex flex-col justify-center items-center relative h-full p-7 ">
+      <div className="absolute inset-0 flex justify-center items-center z-10 ">
+        <div className="flex flex-col justify-center items-center mt-40">
+          <Lottie animationData={voteSucessAnimation} style={style} loop={false} />
+          <div className="font-mono text-3xl font-bold text-center mt-10">
+            You have successfully voted for candidate {searchParams.get("id") ?? "-1"}
+          </div>
         </div>
       </div>
       <div className="relative z-0">

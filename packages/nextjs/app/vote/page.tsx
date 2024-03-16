@@ -90,17 +90,17 @@ const Vote = () => {
   // const candidates = ["Candidate 1", "Candidate 2", "Candidate 3"];
 
   return (
-    <div className="flex-col bg-gradient-to-r from-[#2d275e] to-[#19244F] h-screen p-7">
+    <div className="flex-col  h-full p-5 justify-between flex-1">
       {isLoading ? (
         <LoaderPage message={loaderMessage} />
       ) : (
-        <>
-          <div className="flex flex-row items-center mb-3">
+        <div className="flex h-full flex-col ">
+          <div className="flex flex-row items-center mb-5">
             <div className="text-3xl font-bold ">Vote for {poll?.title}</div>
             <img
               src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${poll?.country?.value}.svg`}
               alt="voter"
-              className="w-14 h-14 ml-5  shadow-xl "
+              className="w-10 h-10 ml-5  shadow-xl "
             />
           </div>
           {poll?.options.map((candidate, index) => (
@@ -110,18 +110,17 @@ const Vote = () => {
               </VoteCard>
             </div>
           ))}
-        </>
+          <div className={`mt-14 ${clickedIndex !== null ? " shadow-2xl" : ""}`}>
+            <HoverBorderCard
+              click={() => {
+                castVote();
+              }}
+            >
+              <div className="flex justify-center w-full text-xl ">Vote Now</div>
+            </HoverBorderCard>
+          </div>
+        </div>
       )}
-
-      <div className={`mt-14 ${clickedIndex !== null ? " shadow-2xl" : ""}`}>
-        <HoverBorderCard
-          click={() => {
-            castVote();
-          }}
-        >
-          <div className="flex justify-center w-full text-xl ">Vote Now</div>
-        </HoverBorderCard>
-      </div>
     </div>
   );
 };
