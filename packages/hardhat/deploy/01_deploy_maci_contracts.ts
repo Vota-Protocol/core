@@ -2,6 +2,7 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { deploy, deployVkRegistryContract, genKeyPair, setVerifyingKeys } from "../cli/index";
 import { poseidonContract } from "circomlibjs";
+import { WorldcoinGatekeeper } from "../typechain-types";
 
 type ExtendedHre = HardhatRuntimeEnvironment & { overwriteArtifact: (name: string, code: unknown) => Promise<void> };
 
@@ -50,7 +51,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
 
   const { deployer } = await hre.getNamedAccounts();
 
-  const gatekeeper = await hre.ethers.getContract("WorldcoinGatekeeper", deployer);
+  const gatekeeper = await hre.ethers.getContract<WorldcoinGatekeeper>("WorldcoinGatekeeper", deployer);
 
   console.log(`The gatekeeper is deployed at ${await gatekeeper.getAddress()}`);
 
@@ -68,6 +69,8 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
     quiet: false,
     signer,
   });
+
+  await gatekeeper.setMaciInstance(s.maciAddress);
 
   console.log(s);
 
