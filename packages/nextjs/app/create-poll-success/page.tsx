@@ -11,7 +11,7 @@ const VoteCreatedSucess = () => {
     width: 600,
   };
   return (
-    <div className="flex flex-col justify-center items-center relative bg-gradient-to-r from-[#181436] to-[#19244F] h-full p-7">
+    <div className="flex flex-col justify-center items-center  h-full p-7">
       <div className="absolute top-0 left-0 w-full h-full z-10 flex flex-col justify-center items-center">
         <Lottie animationData={pollCreatedSucessAnimation} style={style} loop={false} />
         <div className="font-mono flex text-3xl font-bold text-center">

@@ -80,7 +80,7 @@ export default function RegisterPage() {
     //TODO ; add a way to make it rgisteration true
     if (address) {
       setIsRegistered(true);
-      router.push("/home");
+      router.push("/");
     }
   }, [encodedProof]);
 
