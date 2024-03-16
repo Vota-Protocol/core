@@ -12,7 +12,7 @@ const HoverBorderCard: React.FC<HoverBorderProps> = ({ children, showArrow = fal
       className={`p-5 border-2  border-transparent rounded-lg shadow  cursor-pointer 
      bg-[#030710]
      hover:bg-[#090F21] 
-     hover:border-[#3647A4] flex flex-row justify-between p`}
+     hover:border-[#3647A4] flex flex-row justify-between items-center`}
       onClick={click}
     >
       {children}

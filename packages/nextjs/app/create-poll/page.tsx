@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 import person from "~~/components/assets/person.json";
 import LoaderPage from "~~/components/loader/loader";
 import PollComponent, { PollData } from "~~/components/poll/PollComponent";
 
 const CreateVote = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const celebrateStyle = {
     height: 600,
@@ -18,8 +20,8 @@ const CreateVote = () => {
     console.log(data.country?.value);
     setIsLoading(true);
     setTimeout(() => {
-      setIsLoading(false);
-    }, 4000);
+      router.push(`/create-poll-success?pollName=${data.title}`);
+    }, 2000);
   }
 
   return isLoading ? (
