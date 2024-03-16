@@ -18,7 +18,11 @@ const VoteCard = ({ children, clicked, onClick }: VoteCardProps) => {
       className={`w-full h-14 flex justify-end items-center border-2 border-transparent text-xl rounded-full  cursor-pointer 
             transition-all  transform 
            hover:border-[#090F21]  hover:shadow hover:scale-[0.98]
-            ${clicked ? " bg-[#090F21] bg-opacity-100" : " bg-[#3647A4] bg-opacity-30"}
+            ${
+              clicked
+                ? " bg-[#283896] bg-opacity-100 scale-[0.98] shadow border-[#090F21]"
+                : " bg-[#3647A4] bg-opacity-30"
+            }
             `}
       onClick={handleClick}
     >
