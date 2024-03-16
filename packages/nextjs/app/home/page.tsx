@@ -6,13 +6,18 @@ import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import LoaderPage from "~~/components/loader/loader";
 import { listOfMockPolls } from "~~/components/poll/PollDataModel";
 import { usePollStore } from "~~/services/store/polldata_store";
+import useUserRegisteredStore from "~~/services/store/user_registered_store";
 
 const VoterPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const { pollData, setPollData } = usePollStore();
+  const { isRegistered } = useUserRegisteredStore();
 
   useEffect(() => {
+    if (!isRegistered) {
+      router.push("/register");
+    }
     setTimeout(() => {
       setPollData(listOfMockPolls);
       setIsLoading(false);
