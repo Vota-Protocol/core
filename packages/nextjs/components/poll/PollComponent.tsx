@@ -1,5 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import HoverBorderCard from "../card/HoverBorderCard";
+import CountrySelector from "../country_picker/CountryPicker";
+import { COUNTRIES } from "../country_picker/countries";
+import { SelectMenuOption } from "../country_picker/types";
 import { PubKey } from "@se-2/hardhat/domainobjs";
 import { LuCross } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
@@ -27,14 +32,22 @@ function keyToParam(key: PubKey): { x: bigint; y: bigint } {
   return { x: BigInt(p.x), y: BigInt(p.y) };
 }
 
-interface PollData {
+export interface PollData {
   title: string;
   options: string[];
+  country: SelectMenuOption;
 }
 
-const PollComponent: React.FC = () => {
-  const [pollData, setPollData] = useState<PollData>({ title: "DummyTitle", options: [""] });
+const PollComponent: React.FC<{ onPollDataChange: (data: PollData) => void }> = ({ onPollDataChange }) => {
+  const [pollData, setPollData] = useState<PollData>({ title: "Dummy Title", options: [""], country: COUNTRIES[0] });
+  const [isOpen, setIsOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
+  const [country, setCountry] = useState<SelectMenuOption["value"]>("AF");
+
+  const handleCountryChange = (selectedCountry: SelectMenuOption["value"]) => {
+    setCountry(selectedCountry);
+    setPollData({ ...pollData, country: COUNTRIES.find(c => c.value === country) || COUNTRIES[0] });
+  };
   const chainId = useChainId();
 
   const handleAddOption = () => {
@@ -59,7 +72,13 @@ const PollComponent: React.FC = () => {
     setIsEditingTitle(false);
   };
 
-  const { write, data } = useScaffoldContractWrite({
+  function removeOptions(index: number): void {
+    const newOptions = [...pollData.options];
+    newOptions.splice(index, 1);
+    setPollData({ ...pollData, options: newOptions });
+  }
+
+const { write, data } = useScaffoldContractWrite({
     contractName: "MACI",
     functionName: "deployPoll",
     args: [
@@ -87,7 +106,7 @@ const PollComponent: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 shadow-xl rounded-md">
+    <div className="max-w-2xl mx-auto p-6 shadow-2xl rounded-md  bg-gradient-to-r from-[#19244F]  to-[#181436]">
       <div className="flex justify-between items-center mb-4">
         {isEditingTitle ? (
           <input
@@ -98,7 +117,7 @@ const PollComponent: React.FC = () => {
             onChange={handleTitleChange}
           />
         ) : (
-          <h2 className="text-xl font-semibold">{pollData.title}</h2>
+          <h2 className="text-xl font-semibold font-mono ">{pollData.title}</h2>
         )}
 
         <label className="btn btn-circle swap swap-rotate ml-3">
@@ -124,29 +143,47 @@ const PollComponent: React.FC = () => {
           </div>
         </label>
       </div>
+      <div className="flex flex-row place-contents-center">
+        <div className="flex self-center mr-5 text-lg ">Pick the Country</div>
+        <div className="flex flex-1 flex-col">
+          <CountrySelector
+            id={"country-selector"}
+            open={isOpen}
+            onToggle={() => setIsOpen(!isOpen)}
+            onChange={handleCountryChange}
+            selectedValue={COUNTRIES.find(c => c.value === country) || COUNTRIES[0]}
+          />
+        </div>
+      </div>
+
+      <div className="w-full h-[0.5px] bg-[#3647A4] shadow-2xl my-5" />
+
+      <div className="mb-3">Create the options</div>
+
       {pollData.options.map((option, index) => (
         <div key={index} className="mb-2 flex flex-row">
           <input
             type="text"
-            className="border border-[#3647A4] bg-[#3647A4] rounded-md px-4 py-2 w-full focus:outline-none"
+            className="border border-[#3647A4] bg-[#3647A4] rounded-md px-4 py-2 w-full focus:outline-none "
             placeholder={`Candidate ${index + 1}`}
             value={option}
             onChange={e => handleOptionChange(index, e.target.value)}
           />
-          {index === pollData.options.length - 1 && (
+          {index === pollData.options.length - 1 ? (
             <button className="btn btn-outline ml-4" onClick={handleAddOption}>
               <LuCross size={20} />
+            </button>
+          ) : (
+            <button className="btn btn-outline ml-4" onClick={() => removeOptions(index)}>
+              <RxCross2 size={20} />
             </button>
           )}
         </div>
       ))}
 
       <div className="mt-5">
-        <HoverBorderCard>
-          <div onClick={createPoll} className="flex justify-center w-full text-xl ">
-            {" "}
-            Create a Poll{" "}
-          </div>
+        <HoverBorderCard click={() => onPollDataChange(pollData)}>
+          <div className="flex justify-center w-full text-xl "> Create a Poll </div>
         </HoverBorderCard>
       </div>
     </div>
