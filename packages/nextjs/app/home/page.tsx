@@ -47,7 +47,7 @@ const VoterPage = () => {
           <div className="text-3xl font-bold mb-4">Poll Your Vote</div>
         </div>
       )}
-      {isLoading && voters ? (
+      {isLoading ? (
         <LoaderPage />
       ) : (
         voters?.map(voter => (
