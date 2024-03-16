@@ -124,7 +124,7 @@ const PollComponent: React.FC<{ onPollDataChange: (data: PollData) => void }> = 
             </button>
           ) : (
             <button className="btn btn-outline ml-4" onClick={() => removeOptions(index)}>
-              <RxCross2 size={20} />
+              <LuCross size={20} />
             </button>
           )}
         </div>
