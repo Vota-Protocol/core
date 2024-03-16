@@ -15,3 +15,8 @@ artifacts-zk
 cache-zk
 
 deployments/localhost
+
+zkeys
+
+contractAddresses.json
+contractAddresses.old.json
