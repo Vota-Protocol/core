@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
 
 const Vote = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
   const handleCardClick = (index: number) => {
@@ -25,7 +27,14 @@ const Vote = () => {
         </div>
       ))}
 
-      <HoverBorderCard>
+      <HoverBorderCard
+        click={() => {
+          // call the contract to vote
+          console.log("Voting for candidate", clickedIndex);
+          // navigate to the home page
+          router.push(`/voted-success?id=${clickedIndex}`);
+        }}
+      >
         <div className="flex justify-center w-full text-xl ">Vote Now</div>
       </HoverBorderCard>
     </div>
