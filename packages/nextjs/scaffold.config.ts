@@ -1,3 +1,4 @@
+import { defineChain } from "viem";
 import * as chains from "viem/chains";
 
 export type ScaffoldConfig = {
@@ -9,9 +10,45 @@ export type ScaffoldConfig = {
   walletAutoConnect: boolean;
 };
 
+export const optimismSepolia = /*#__PURE__*/ defineChain({
+  id: 11155420,
+  name: "Optimism Sepolia",
+  network: "optimism-sepolia",
+  nativeCurrency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: {
+    alchemy: {
+      http: ["https://opt-sepolia.g.alchemy.com/v2"],
+      webSocket: ["wss://opt-sepolia.g.alchemy.com/v2"],
+    },
+    default: {
+      http: ["https://sepolia.optimism.io"],
+    },
+    public: {
+      http: ["https://sepolia.optimism.io"],
+    },
+  },
+  blockExplorers: {
+    blockscout: {
+      name: "Blockscout",
+      url: "https://optimism-sepolia.blockscout.com",
+    },
+    default: {
+      name: "Blockscout",
+      url: "https://optimism-sepolia.blockscout.com",
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: "0xca11bde05977b3631167028862be2a173976ca11",
+      blockCreated: 1620204,
+    },
+  },
+  testnet: true,
+});
+
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  targetNetworks: [optimismSepolia],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
