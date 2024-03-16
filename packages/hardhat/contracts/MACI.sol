@@ -13,7 +13,6 @@ import { Params } from "./utilities/Params.sol";
 import { TopupCredit } from "./TopupCredit.sol";
 import { Utilities } from "./utilities/Utilities.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 /// @title MACI - Minimum Anti-Collusion Infrastructure Version 1
 /// @notice A contract which allows users to sign up, and deploy new polls
@@ -73,6 +72,7 @@ contract MACI is IMACI, Params, Utilities, Ownable {
 	/// @notice The contract which provides the values of the initial voice credit
 	/// balance per user
 	InitialVoiceCreditProxy public immutable initialVoiceCreditProxy;
+	address public manager;
 
 	/// @notice A struct holding the addresses of poll, mp and tally
 	struct PollContracts {
@@ -151,11 +151,18 @@ contract MACI is IMACI, Params, Utilities, Ownable {
 		initialVoiceCreditProxy = _initialVoiceCreditProxy;
 		stateTreeDepth = _stateTreeDepth;
 
-		console.logUint(hash2([uint256(1), uint256(1)]));
-
 		// Verify linked poseidon libraries
 		if (hash2([uint256(1), uint256(1)]) == 0)
 			revert PoseidonHashLibrariesNotLinked();
+	}
+
+	function updateManager(address _manager) public onlyOwner {
+		manager = _manager;
+	}
+
+	modifier onlyManager() {
+		require(msg.sender == manager, "only manager can create poll");
+		_;
 	}
 
 	/// @notice Allows any eligible user sign up. The sign-up gatekeeper should prevent
@@ -236,7 +243,7 @@ contract MACI is IMACI, Params, Utilities, Ownable {
 		address _verifier,
 		address _vkRegistry,
 		bool useSubsidy
-	) public virtual onlyOwner returns (PollContracts memory pollAddr) {
+	) public virtual onlyManager returns (PollContracts memory pollAddr) {
 		// cache the poll to a local variable so we can increment it
 		uint256 pollId = nextPollId;
 
@@ -246,9 +253,9 @@ contract MACI is IMACI, Params, Utilities, Ownable {
 			nextPollId++;
 		}
 
-		if (pollId > 0) {
-			if (!stateAq.treeMerged()) revert PreviousPollNotCompleted(pollId);
-		}
+		// if (pollId > 0) {
+		// 	if (!stateAq.treeMerged()) revert PreviousPollNotCompleted(pollId);
+		// }
 
 		MaxValues memory maxValues = MaxValues({
 			maxMessages: uint256(TREE_ARITY) ** _treeDepths.messageTreeDepth,
