@@ -1,26 +1,31 @@
-import React, { useState } from "react";
+import { BiLike } from "react-icons/bi";
 
 type VoteCardProps = {
   children: React.ReactNode;
+  clicked: boolean;
+  onClick: () => void;
 };
 
-const VoteCard = ({ children }: VoteCardProps) => {
-  const [clicked, setClicked] = useState(false);
-
+const VoteCard = ({ children, clicked, onClick }: VoteCardProps) => {
   const handleClick = () => {
-    setClicked(!clicked);
+    onClick();
   };
+
+  // Rest of the component code...
 
   return (
     <div
-      className={`w-full h-14 flex justify-center items-center border-2 border-transparent text-xl rounded-full  cursor-pointer 
+      className={`w-full h-14 flex justify-end items-center border-2 border-transparent text-xl rounded-full  cursor-pointer 
             transition-all  transform 
            hover:border-[#090F21]  hover:shadow hover:scale-[0.98]
             ${clicked ? " bg-[#090F21] bg-opacity-100" : " bg-[#3647A4] bg-opacity-30"}
             `}
       onClick={handleClick}
     >
-      {children}
+      <div className="flex-grow text-center">{children}</div>
+      <div className={`transition-all mr-5 transform ${clicked ? "opacity-100" : " opacity-0"}`}>
+        <BiLike />
+      </div>
     </div>
   );
 };
