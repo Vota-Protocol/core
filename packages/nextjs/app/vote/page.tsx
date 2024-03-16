@@ -10,6 +10,7 @@ import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
 import LoaderPage from "~~/components/loader/loader";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { usePollStore } from "~~/services/store/polldata_store";
 
 /**
  *
@@ -31,6 +32,9 @@ const Vote = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { pollData } = usePollStore();
+  const poll = pollData?.find(poll => poll.title === searchParams.get("id"));
+
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
   const handleCardClick = (index: number) => {
     setClickedIndex(clickedIndex === index ? null : index);
@@ -83,7 +87,7 @@ const Vote = () => {
   console.log(maxValues);
   console.log(coordinatorPubKeyResult);
 
-  const candidates = ["Candidate 1", "Candidate 2", "Candidate 3"];
+  // const candidates = ["Candidate 1", "Candidate 2", "Candidate 3"];
 
   return (
     <div className="flex-col bg-gradient-to-r from-[#2d275e] to-[#19244F] h-screen p-7">
@@ -91,8 +95,15 @@ const Vote = () => {
         <LoaderPage message={loaderMessage} />
       ) : (
         <>
-          <div className="text-3xl font-bold mb-4">Vote for {searchParams.get("id") ?? "-1"}</div>
-          {candidates.map((candidate, index) => (
+          <div className="flex flex-row items-center mb-3">
+            <div className="text-3xl font-bold ">Vote for {poll?.title}</div>
+            <img
+              src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${poll?.country?.value}.svg`}
+              alt="voter"
+              className="w-14 h-14 ml-5  shadow-xl "
+            />
+          </div>
+          {poll?.options.map((candidate, index) => (
             <div className="pb-3" key={index}>
               <VoteCard clicked={clickedIndex === index} onClick={() => handleCardClick(index)}>
                 <div>{candidate}</div>
@@ -102,7 +113,7 @@ const Vote = () => {
         </>
       )}
 
-      <div className={`mt-14 ${clickedIndex !== null ? " shadow animate-pulse" : ""}`}>
+      <div className={`mt-14 ${clickedIndex !== null ? " shadow-2xl" : ""}`}>
         <HoverBorderCard
           click={() => {
             castVote();

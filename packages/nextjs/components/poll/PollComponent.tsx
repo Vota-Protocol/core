@@ -5,15 +5,10 @@ import HoverBorderCard from "../card/HoverBorderCard";
 import CountrySelector from "../country_picker/CountryPicker";
 import { COUNTRIES } from "../country_picker/countries";
 import { SelectMenuOption } from "../country_picker/types";
+import { PollData } from "./PollDataModel";
 import { LuCross } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
-
-export interface PollData {
-  title: string;
-  options: string[];
-  country: SelectMenuOption;
-}
 
 const PollComponent: React.FC<{ onPollDataChange: (data: PollData) => void }> = ({ onPollDataChange }) => {
   const [pollData, setPollData] = useState<PollData>({ title: "Dummy Title", options: [""], country: COUNTRIES[0] });

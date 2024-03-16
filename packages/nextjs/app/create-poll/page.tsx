@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PubKey } from "@se-2/hardhat/domainobjs";
 import Lottie from "lottie-react";
 import { useChainId } from "wagmi";
 import person from "~~/components/assets/person.json";
 import LoaderPage from "~~/components/loader/loader";
-import PollComponent, { PollData } from "~~/components/poll/PollComponent";
+import PollComponent from "~~/components/poll/PollComponent";
+import { PollData } from "~~/components/poll/PollDataModel";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { contracts } from "~~/utils/scaffold-eth/contract";
 
@@ -30,12 +32,14 @@ function keyToParam(key: PubKey): { x: bigint; y: bigint } {
 }
 
 const CreateVote = () => {
-  const chainId = useChainId();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const celebrateStyle = {
     height: 600,
     width: 600,
   };
+
+  const chainId = useChainId();
 
   const { writeAsync, data } = useScaffoldContractWrite({
     contractName: "MACI",
@@ -59,15 +63,13 @@ const CreateVote = () => {
   console.log(data);
 
   async function createPoll(data: PollData): Promise<void> {
-    console.log(data);
-    console.log(data.country?.title);
-    console.log(data.country?.value);
     setIsLoading(true);
     try {
       await writeAsync();
     } catch (err) {
       console.log(err);
     }
+    router.push(`/create-poll-success?pollName=${data.title}`);
     setIsLoading(false);
   }
 
