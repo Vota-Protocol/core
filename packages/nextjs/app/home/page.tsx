@@ -1,7 +1,10 @@
-// create a new page for the voter that return Hover
+"use client";
+
+import { useRouter } from "next/navigation";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 
 const VoterPage = () => {
+  const router = useRouter();
   const voters = [
     { id: 1, title: "Voter Page 1", numberOfCandidates: 3 },
     { id: 2, title: "Voter Page 2", numberOfCandidates: 5 },
@@ -14,10 +17,20 @@ const VoterPage = () => {
       </div>
       {voters.map(voter => (
         <div className="mb-4 mx-4" key={voter.id}>
-          <HoverBorderCard showArrow={true}>
-            <div className="flex flex-col">
-              <h1 className="text-lg font-bold">{voter.title}</h1>
-              <h1 className="text-md text-slate-500">{voter.numberOfCandidates} Candidates</h1>
+          <HoverBorderCard
+            showArrow={true}
+            click={() => {
+              // navigate to the vote page
+              router.push(`/vote?id=${voter.id}`);
+            }}
+          >
+            <div className="flex flex-row ">
+              <img src="https://via.placeholder.com/150" alt="voter" className="w-14 h-14 mr-5 rounded-full" />
+
+              <div className="flex flex-col">
+                <h1 className="text-lg font-bold">{voter.title}</h1>
+                <h1 className="text-md text-slate-500">{voter.numberOfCandidates} Candidates</h1>
+              </div>
             </div>
           </HoverBorderCard>
         </div>
