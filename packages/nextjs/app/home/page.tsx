@@ -14,6 +14,7 @@ interface Voter {
 const VoterPage = () => {
   const router = useRouter();
   const [voters, setVoters] = useState<Voter[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
@@ -35,6 +36,7 @@ const VoterPage = () => {
         },
       ];
       setVoters(data);
+      setIsLoading(false);
     }, 4000);
   }, []);
 
@@ -45,10 +47,10 @@ const VoterPage = () => {
           <div className="text-3xl font-bold mb-4">Poll Your Vote</div>
         </div>
       )}
-      {voters === null ? (
+      {isLoading ? (
         <LoaderPage />
       ) : (
-        voters.map(voter => (
+        voters?.map(voter => (
           <div className="mb-4 mx-4" key={voter.id}>
             <HoverBorderCard
               showArrow={true}

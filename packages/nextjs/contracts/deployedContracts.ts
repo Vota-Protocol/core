@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ConstantInitialVoiceCreditProxy: {
-      address: "0x345cA3e014Aaf5dcA488057592ee47305D9B3e10",
+      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
       abi: [
         {
           inputs: [
@@ -50,7 +50,7 @@ const deployedContracts = {
       },
     },
     FreeForAllGatekeeper: {
-      address: "0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF",
+      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       abi: [
         {
           inputs: [],
@@ -92,7 +92,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     MACI: {
-      address: "0xeec918d74c746167564401103096D45BbD494B74",
+      address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
       abi: [
         {
           inputs: [
@@ -1029,7 +1029,7 @@ const deployedContracts = {
       },
     },
     MessageProcessorFactory: {
-      address: "0x75c35C980C0d37ef46DF04d31A140b65503c0eEd",
+      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       abi: [
         {
           inputs: [],
@@ -1084,7 +1084,7 @@ const deployedContracts = {
       },
     },
     PollFactory: {
-      address: "0xf204a4Ef082f5c04bB89F7D5E6568B796096735a",
+      address: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
       abi: [
         {
           inputs: [],
@@ -1211,7 +1211,7 @@ const deployedContracts = {
       },
     },
     PoseidonT3: {
-      address: "0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4",
+      address: "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       abi: [
         {
           inputs: [
@@ -1236,7 +1236,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     PoseidonT4: {
-      address: "0x30753E4A8aad7F8597332E813735Def5dD395028",
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
       abi: [
         {
           inputs: [
@@ -1261,7 +1261,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     PoseidonT5: {
-      address: "0xFB88dE099e13c3ED21F80a7a1E49f8CAEcF10df6",
+      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       abi: [
         {
           inputs: [
@@ -1286,7 +1286,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     PoseidonT6: {
-      address: "0xAa588d3737B611baFD7bD713445b314BD453a5C8",
+      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       abi: [
         {
           inputs: [
@@ -1311,7 +1311,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     SubsidyFactory: {
-      address: "0xdDA6327139485221633A1FcD65f4aC932E60A2e1",
+      address: "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
       abi: [
         {
           inputs: [
@@ -1358,7 +1358,7 @@ const deployedContracts = {
       },
     },
     TallyFactory: {
-      address: "0x82D50AD3C1091866E258Fd0f1a7cC9674609D254",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           inputs: [
@@ -1405,7 +1405,7 @@ const deployedContracts = {
       },
     },
     TopupCredit: {
-      address: "0x9FBDa871d559710256a2502A2517b794B482Db40",
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       abi: [
         {
           inputs: [],
@@ -1815,7 +1815,7 @@ const deployedContracts = {
       },
     },
     Verifier: {
-      address: "0x8f0483125FCb9aaAEFA9209D8E9d7b9C8B9Fb90F",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [],
@@ -1977,7 +1977,7 @@ const deployedContracts = {
       },
     },
     VkRegistry: {
-      address: "0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [],

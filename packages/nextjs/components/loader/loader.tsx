@@ -1,10 +1,22 @@
-"use client";
-
 import Lottie from "lottie-react";
 import voteAnimation from "~~/components/assets/vote.json";
 
-const LoaderPage = () => {
-  return <Lottie animationData={voteAnimation} />;
+interface LoaderPageProps {
+  message?: string;
+}
+
+const LoaderPage = ({ message = "Loading ..." }: LoaderPageProps) => {
+  const style = {
+    height: 400,
+    width: 400,
+  };
+
+  return (
+    <div className="flex flex-col justify-center items-center h-screen">
+      <Lottie animationData={voteAnimation} style={style} />
+      <p className="text-center text-3xl font-mono font-extrabold">{message}</p>
+    </div>
+  );
 };
 
 export default LoaderPage;
