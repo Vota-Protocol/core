@@ -41,7 +41,7 @@ const CreateVote = () => {
 
   const chainId = useChainId();
 
-  const { write, data } = useScaffoldContractWrite({
+  const { writeAsync, data } = useScaffoldContractWrite({
     contractName: "MACI",
     functionName: "deployPoll",
     args: [
@@ -62,17 +62,15 @@ const CreateVote = () => {
   console.log(chainId);
   console.log(data);
 
-  function createPoll(data: PollData): void {
+  async function createPoll(data: PollData): Promise<void> {
     setIsLoading(true);
-    // crreating the poll
     try {
-      write();
-    } catch (e) {
-      console.error(e);
+      await writeAsync();
+    } catch (err) {
+      console.log(err);
     }
-    setTimeout(() => {
-      router.push(`/create-poll-success?pollName=${data.title}`);
-    }, 2000);
+    router.push(`/create-poll-success?pollName=${data.title}`);
+    setIsLoading(false);
   }
 
   return isLoading ? (
