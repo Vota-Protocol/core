@@ -6,7 +6,7 @@ interface UserRegisteredStore {
 }
 
 const useUserRegisteredStore = create<UserRegisteredStore>(set => ({
-  isRegistered: true,
+  isRegistered: false,
   setIsRegistered: data => set({ isRegistered: data }),
 }));
 

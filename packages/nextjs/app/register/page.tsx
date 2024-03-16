@@ -78,8 +78,10 @@ export default function RegisterPage() {
   useEffect(() => {
     writeAsync();
     //TODO ; add a way to make it rgisteration true
-    setIsRegistered(true);
-    router.push("/home");
+    if (address) {
+      setIsRegistered(true);
+      router.push("/home");
+    }
   }, [encodedProof]);
 
   const style = {

@@ -12,9 +12,9 @@ const LoaderPage = ({ message = "Loading ..." }: LoaderPageProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-full">
       <Lottie animationData={voteAnimation} style={style} />
-      <p className="text-center text-3xl font-mono font-extrabold">{message}</p>
+      <p className="text-center text-3xl md:text-xl font-mono font-extrabold">{message}</p>
     </div>
   );
 };
