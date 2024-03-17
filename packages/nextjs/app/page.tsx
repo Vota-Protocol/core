@@ -130,7 +130,7 @@ export default function VoterPage() {
                   showArrow={true}
                   click={() => {
                     // navigate to the vote page
-                    router.push(`/vote/${voter.id}`);
+                    router.push(`/vote/${voter.id}?active=false`);
                   }}
                 >
                   <div className="flex flex-row ">

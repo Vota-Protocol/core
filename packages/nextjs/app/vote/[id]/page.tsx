@@ -9,6 +9,7 @@ import { Keypair, Message, PCommand, PubKey } from "@se-2/hardhat/domainobjs";
 import toast from "react-hot-toast";
 import { useContractRead, useContractWrite } from "wagmi";
 import PollAbi from "~~/abi/Poll.abi";
+import { Timer } from "~~/components/Timer";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
 import LoaderPage from "~~/components/loader/loader";
@@ -45,13 +46,14 @@ const Vote = () => {
       return;
     }
 
-    const data = {
+    const data: PollData = {
       id: Number(id),
       title: pollRaw[0],
       options: decodeOptions(pollRaw[1] as `0x${string}`) as string[],
       country: { title: "India", value: "IN" },
+      expiry: Number(pollRaw[5]),
     };
-    setPoll(data as PollData);
+    setPoll(data);
     console.log("randomVotes pollraw", pollRaw);
     setRandomVotes(generateRandomVotes(data.options.length));
     console.log("randomVotes", randomVotes);
@@ -193,7 +195,7 @@ const Vote = () => {
           </div>
 
           <div className="flex flex-col mt-10">
-            <div className="text-2xl font-bold my-5">Results</div>
+            <div className="text-3xl font-bold my-5">Results</div>
 
             {!isActive ? (
               poll?.options.map((option, index) => (
@@ -210,7 +212,10 @@ const Vote = () => {
                 </div>
               ))
             ) : (
-              <div>Results will be displayed after the poll ends</div>
+              <div className="flex flex-col text-gray-500 ">
+                <div className="text-xl"> Results will be displayed after the voting ends, and voting ends in </div>
+                <Timer expiryDate={(poll?.expiry ?? 0) * 1000} />
+              </div>
             )}
           </div>
         </div>

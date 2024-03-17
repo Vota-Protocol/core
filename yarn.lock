@@ -2502,6 +2502,7 @@ __metadata:
     react-dom: ~18.2.0
     react-hot-toast: ~2.4.0
     react-icons: ^5.0.1
+    react-timer-hook: ^3.0.7
     tailwindcss: ~3.3.3
     type-fest: ~4.6.0
     typescript: ~5.1.6
@@ -12765,6 +12766,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 7ee8ef3aab74c7ae1d70ff34a27643d11ba1a8d62d072c767827d9ff9a520905223e567002e0bf6c772929d8ea1c781a3ba0cc4a563e92b1e3dc2eaa817ecbe8
+  languageName: node
+  linkType: hard
+
+"react-timer-hook@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "react-timer-hook@npm:3.0.7"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 800c45a7fbf181897971b15f0d7b226f35348a12c48f933afbc1112693101bf3966bd7d276e4cb9fdc922c1ea66d8cbeddb0268e1631d1e39aa4b062cba2a7d1
   languageName: node
   linkType: hard
 
