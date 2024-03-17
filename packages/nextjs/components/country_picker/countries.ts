@@ -36,6 +36,18 @@ export const COUNTRIES = [
     value: "GB",
   },
   {
+    title: "India",
+    value: "IN",
+  },
+  {
+    title: "India",
+    value: "IN",
+  },
+  {
+    title: "India",
+    value: "IN",
+  },
+  {
     title: "Aruba",
     value: "AW",
   },
