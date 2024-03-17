@@ -66,9 +66,9 @@ const Vote = () => {
         setIsLoading(false);
       }, 1000);
     } catch (err) {
-      console.log(err);
+      console.log("err", err);
       setIsLoading(false);
-      toast.error("Casting vote failed, please try again");
+      toast.error("Casting vote failed, please try again ");
     }
   };
 
@@ -118,7 +118,6 @@ const Vote = () => {
     if (!clickedIndex || !coordinatorPubKey || !keypair) {
       return;
     }
-
     const command: PCommand = new PCommand(
       1n, // stateindex
       keypair.pubKey, // userMaciPubKey
