@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Keypair, PubKey } from "@se-2/hardhat/domainobjs";
 import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 import Lottie from "lottie-react";
@@ -12,18 +11,19 @@ import walletAnimation from "~~/components/assets/wallet.json";
 import walletConnectedAnimation from "~~/components/assets/wallet_connected.json";
 import worldCoinGif from "~~/components/assets/worldcoin.gif";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
+import { useAuthContext } from "~~/contexts/AuthContext";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useAuthUserOnly } from "~~/hooks/useAuthUserOnly";
 import { decode } from "~~/lib/wld";
-import useUserRegisteredStore from "~~/services/store/user_registered_store";
 import { fetchOrCreateUserKeyPair } from "~~/utils/crypto";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const { address } = useAccount();
   const [keypair, setKeyPair] = useState<Keypair | null>(null);
   const [proof, setProof] = useState<ISuccessResult | null>(null);
   const [encodedProof, setEncodedProof] = useState<`0x${string}` | undefined>();
-  const { setIsRegistered } = useUserRegisteredStore();
+
+  useAuthUserOnly({ inverted: true });
 
   useEffect(() => {
     setKeyPair(fetchOrCreateUserKeyPair(address));
@@ -75,13 +75,13 @@ export default function RegisterPage() {
     ],
   });
 
+  const { refetchIsRegistered } = useAuthContext();
+
   useEffect(() => {
+    if (!encodedProof) return;
     writeAsync();
     //TODO ; add a way to make it rgisteration true
-    if (address) {
-      setIsRegistered(true);
-      router.push("/");
-    }
+    refetchIsRegistered();
   }, [encodedProof]);
 
   const style = {

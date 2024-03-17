@@ -16,11 +16,12 @@ contract PollManager is Ownable, Params, DomainObjs {
 
 	struct PollData {
 		string name;
-		string[25] options;
+		bytes options;
 		string ipfsHash;
 		address creator;
 		PollContracts pollContracts;
 		uint256 endTime;
+		uint256 numOfOptions;
 	}
 
 	uint256 public fees;
@@ -67,8 +68,9 @@ contract PollManager is Ownable, Params, DomainObjs {
 
 	function createPoll(
 		string calldata _name,
-		string[25] calldata _options,
-		string calldata _ipfsHash
+		bytes calldata _options,
+		string calldata _ipfsHash,
+		uint256 numOfOptions
 	) public payable {
 		require(msg.value == fees, "incorrect fees sent");
 
@@ -93,7 +95,8 @@ contract PollManager is Ownable, Params, DomainObjs {
 				messageProcessor: c.messageProcessor,
 				tally: c.tally,
 				subsidy: c.subsidy
-			})
+			}),
+			numOfOptions: numOfOptions
 		});
 	}
 }

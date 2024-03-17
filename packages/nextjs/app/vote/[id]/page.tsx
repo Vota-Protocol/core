@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // import { PubKey } from "@se-2/hardhat/domainobjs";
 import { useContractRead } from "wagmi";
@@ -9,31 +9,39 @@ import PollAbi from "~~/abi/Poll.abi";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
 import LoaderPage from "~~/components/loader/loader";
+import { PollData } from "~~/components/poll/PollDataModel";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
-import { usePollStore } from "~~/services/store/polldata_store";
-
-/**
- *
- * KP 1
- * [✓] Public key: macipk.31c3b9d36aed8ab9490d7468cb581669ff2774791c7fcefc4cdd07bd009a019d
- * [✓] Private key: macisk.79a8acc8572683cd2f6a212b7ac096f66b39dbad6ceb11634a1b0d7584df4856
- *
- * KP 2
- * [✓] Public key: macipk.f48bc9877d99ba9482ababaa53f31d492d84bf105e0c8b3fc60edbf52ed7f0a3
- * [✓] Private key: macisk.578e007d0eb7625624c00e898379bc2b3e96af59dffa7212eb2a5ae100f24c73
- *
- */
-
-// const coordinatorPubKey = PubKey.deserialize("31c3b9d36aed8ab9490d7468cb581669ff2774791c7fcefc4cdd07bd009a019d");
+import { decodeOptions } from "~~/utils/crypto";
 
 const Vote = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loaderMessage, setLoaderMessage] = useState("Casting the vote, please wait...");
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { pollData } = usePollStore();
-  const poll = pollData?.find(poll => poll.title === searchParams.get("id"));
+  const params = useParams();
+  const { id } = params;
+
+  const [poll, setPoll] = useState<PollData>();
+
+  const { data: pollRaw } = useScaffoldContractRead({
+    contractName: "PollManager",
+    functionName: "polls",
+    args: [BigInt(id as string)],
+  });
+
+  useEffect(() => {
+    if (!pollRaw) {
+      setPoll(undefined);
+      return;
+    }
+
+    setPoll({
+      id: Number(id),
+      title: pollRaw[0],
+      options: decodeOptions(pollRaw[1] as `0x${string}`) as string[],
+      country: { title: "India", value: "IN" },
+    });
+  }, [pollRaw]);
 
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
   const handleCardClick = (index: number) => {

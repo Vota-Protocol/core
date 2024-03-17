@@ -3405,7 +3405,7 @@ const deployedContracts = {
       },
     },
     MACI: {
-      address: "0x840748F7Fd3EA956E5f4c88001da5CC1ABCBc038",
+      address: "0xc075BC0f734EFE6ceD866324fc2A9DBe1065CBB1",
       abi: [
         {
           inputs: [
@@ -4550,7 +4550,7 @@ const deployedContracts = {
       },
     },
     PollManager: {
-      address: "0x04f1A5b9BD82a5020C49975ceAd160E98d8B77Af",
+      address: "0xd3b893cd083f07Fe371c1a87393576e7B01C52C6",
       abi: [
         {
           inputs: [
@@ -4621,14 +4621,19 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "string[25]",
+              internalType: "bytes",
               name: "_options",
-              type: "string[25]",
+              type: "bytes",
             },
             {
               internalType: "string",
               name: "_ipfsHash",
               type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "numOfOptions",
+              type: "uint256",
             },
           ],
           name: "createPoll",
@@ -4704,6 +4709,11 @@ const deployedContracts = {
               type: "string",
             },
             {
+              internalType: "bytes",
+              name: "options",
+              type: "bytes",
+            },
+            {
               internalType: "string",
               name: "ipfsHash",
               type: "string",
@@ -4743,6 +4753,11 @@ const deployedContracts = {
             {
               internalType: "uint256",
               name: "endTime",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "numOfOptions",
               type: "uint256",
             },
           ],
@@ -7100,7 +7115,7 @@ const deployedContracts = {
       },
     },
     WorldcoinGatekeeper: {
-      address: "0x9155497EAE31D432C0b13dBCc0615a37f55a2c87",
+      address: "0x38F6F2caE52217101D7CA2a5eC040014b4164E6C",
       abi: [
         {
           inputs: [
@@ -7210,6 +7225,25 @@ const deployedContracts = {
             },
           ],
           name: "registeredTokenIds",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "registeredUsers",
           outputs: [
             {
               internalType: "bool",

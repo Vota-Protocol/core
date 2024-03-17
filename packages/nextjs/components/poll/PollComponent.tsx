@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HoverBorderCard from "../card/HoverBorderCard";
 import CountrySelector from "../country_picker/CountryPicker";
 import { COUNTRIES } from "../country_picker/countries";
@@ -9,8 +9,20 @@ import { PollData } from "./PollDataModel";
 import { LuCross } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
+import { encodeAbiParameters } from "viem";
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
-const PollComponent: React.FC<{ onPollDataChange: (data: PollData) => void }> = ({ onPollDataChange }) => {
+function encodeOptions(options: string[]) {
+  return encodeAbiParameters([{ type: "string[]" }], [options]);
+}
+
+export default function PollComponent({
+  next,
+  setIsLoading,
+}: {
+  next: (title: string) => void;
+  setIsLoading: (loading: boolean) => void;
+}) {
   const [pollData, setPollData] = useState<PollData>({ title: "Dummy Title", options: [""], country: COUNTRIES[0] });
   const [isOpen, setIsOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
@@ -47,6 +59,34 @@ const PollComponent: React.FC<{ onPollDataChange: (data: PollData) => void }> = 
     const newOptions = [...pollData.options];
     newOptions.splice(index, 1);
     setPollData({ ...pollData, options: newOptions });
+  }
+
+  const { data: fees } = useScaffoldContractRead({
+    contractName: "PollManager",
+    functionName: "fees",
+  });
+
+  const { writeAsync, data, isLoading } = useScaffoldContractWrite({
+    contractName: "PollManager",
+    functionName: "createPoll",
+    args: [pollData?.title, encodeOptions(pollData?.options || []), "", BigInt(pollData?.options?.length || 0)],
+    value: fees,
+  });
+
+  console.log(data);
+
+  useEffect(() => {
+    setIsLoading(isLoading);
+  }, [isLoading]);
+
+  async function onSubmit() {
+    try {
+      await writeAsync();
+    } catch (err) {
+      console.log(err);
+    }
+
+    next(pollData?.title);
   }
 
   return (
@@ -126,12 +166,10 @@ const PollComponent: React.FC<{ onPollDataChange: (data: PollData) => void }> = 
       ))}
 
       <div className="mt-5">
-        <HoverBorderCard click={() => onPollDataChange(pollData)}>
+        <HoverBorderCard click={onSubmit}>
           <div className="flex justify-center w-full text-xl "> Create a Poll </div>
         </HoverBorderCard>
       </div>
     </div>
   );
-};
-
-export default PollComponent;
+}

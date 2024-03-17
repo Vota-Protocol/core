@@ -28,6 +28,8 @@ contract WorldcoinGatekeeper is SignUpGatekeeper, Ownable {
 	/// @dev Whether a nullifier hash has been used already. Used to guarantee an action is only performed once by a single person
 	mapping(uint256 => bool) internal nullifierHashes;
 
+	mapping(address => bool) public registeredUsers;
+
 	error InvalidProver();
 	error OnlyMACI();
 
@@ -60,6 +62,8 @@ contract WorldcoinGatekeeper is SignUpGatekeeper, Ownable {
 		}
 
 		verifyAndExecute(signal, root, nullifierHash, proof);
+
+		registeredUsers[_user] = true;
 	}
 
 	function verifyAndExecute(
