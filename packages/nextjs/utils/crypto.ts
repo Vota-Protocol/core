@@ -1,6 +1,7 @@
 "use client";
 
 import { Keypair, PrivKey } from "@se-2/hardhat/domainobjs";
+import { decodeAbiParameters } from "viem";
 
 export function fetchOrCreateUserKeyPair(address?: string) {
   if (!address) return null;
@@ -20,4 +21,8 @@ export function fetchOrCreateUserKeyPair(address?: string) {
   localStorage.setItem(`key-${address}`, keypair.privKey.serialize());
 
   return keypair;
+}
+
+export function decodeOptions(encodedData: `0x${string}`) {
+  return decodeAbiParameters([{ type: "string[]" }], encodedData)[0];
 }

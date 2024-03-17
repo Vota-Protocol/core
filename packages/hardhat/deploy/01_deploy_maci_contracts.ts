@@ -1,6 +1,6 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { deploy, deployVkRegistryContract, genKeyPair, setVerifyingKeys } from "../cli/index";
+import { deploy, deployVkRegistryContract, setVerifyingKeys } from "../cli/index";
 import { poseidonContract } from "circomlibjs";
 import { WorldcoinGatekeeper } from "../typechain-types";
 
@@ -13,11 +13,6 @@ type ExtendedHre = HardhatRuntimeEnvironment & { overwriteArtifact: (name: strin
  * @param hre HardhatRuntimeEnvironment object.
  */
 const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const pair1 = genKeyPair({});
-  const pair2 = genKeyPair({});
-  console.log(pair1);
-  console.log(pair2);
-
   const signer = (await hre.ethers.getSigners())[0];
 
   const vk = await deployVkRegistryContract({ hre, signer });
@@ -58,7 +53,7 @@ const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvir
   const s = await deploy({
     hre,
     stateTreeDepth: 10,
-    initialVoiceCredits: undefined,
+    initialVoiceCredits: 1,
     initialVoiceCreditsProxyAddress: undefined,
     signupGatekeeperAddress: await gatekeeper.getAddress(),
     poseidonT3Address: undefined,

@@ -4,16 +4,26 @@ interface HoverBorderProps {
   children: React.ReactNode;
   showArrow?: boolean;
   click?: () => void;
+  disabled?: boolean;
 }
 
-const HoverBorderCard: React.FC<HoverBorderProps> = ({ children, showArrow = false, click }) => {
+const HoverBorderCard: React.FC<HoverBorderProps> = ({ children, showArrow = false, click, disabled = false }) => {
   return (
     <div
-      className={`p-5 border-2  border-transparent rounded-lg shadow  cursor-pointer 
-     bg-[#030710]
-     hover:bg-[#090F21] 
-     hover:border-[#3647A4] flex flex-row justify-between items-center`}
-      onClick={click}
+      className={`p-5 border-2  border-transparent rounded-lg  
+      ${
+        disabled
+          ? "cursor-not-allowed opacity-50"
+          : "shadow-xl cursor-pointer hover:bg-[#090F21] hover:border-[#3647A4] flex flex-row justify-between items-center"
+      } 
+      bg-[#030710]
+      
+      `}
+      onClick={() => {
+        if (!disabled && click) {
+          click();
+        }
+      }}
     >
       {children}
       {showArrow && (

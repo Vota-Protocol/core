@@ -1,73 +1,159 @@
 "use client";
 
-import Link from "next/link";
-import Worldcoin from "./_components/worldcoin";
-import type { NextPage } from "next";
-import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useChainId, useContractReads } from "wagmi";
+import HoverBorderCard from "~~/components/card/HoverBorderCard";
+import { COUNTRIES } from "~~/components/country_picker/countries";
+import LoaderPage from "~~/components/loader/loader";
+import { PollData } from "~~/components/poll/PollDataModel";
+import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { useAuthUserOnly } from "~~/hooks/useAuthUserOnly";
+import { decodeOptions } from "~~/utils/crypto";
+import { contracts } from "~~/utils/scaffold-eth/contract";
 
-const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
+export default function VoterPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  useAuthUserOnly({});
 
+  const { data: totalPolls } = useScaffoldContractRead({
+    contractName: "PollManager",
+    functionName: "totalPolls",
+  });
+
+  const [pollsFormatted, setPollsFormatted] = useState<PollData[]>();
+
+  console.log(totalPolls);
+
+  const chainId = useChainId();
+
+  const { data: pollsRaw } = useContractReads({
+    contracts: Array.from(Array(Number(totalPolls || 0n)).keys()).map((_, i) => ({
+      address: (contracts && contracts[chainId] && contracts[chainId]["PollManager"]?.address) || undefined,
+      abi: (contracts && contracts[chainId] && contracts[chainId]["PollManager"]?.abi) || undefined,
+      functionName: "polls",
+      args: [BigInt(i + 1)],
+      onSuccess() {
+        setIsLoading(false);
+      },
+    })),
+  });
+
+  console.log("isLoading in mainpage", isLoading);
+
+  useEffect(() => {
+    if (!pollsRaw || pollsRaw.length == 0 || pollsRaw.filter(({ status }) => status !== "success").length !== 0) {
+      setPollsFormatted([]);
+      return;
+    }
+
+    const dataList: PollData[] = [];
+    let i = -1;
+    for (const poll of pollsRaw) {
+      i++;
+      if (!poll.result) continue;
+      dataList.push({
+        id: i + 1,
+        title: (poll.result as any)[0] as string,
+        options: decodeOptions((poll.result as any)[1] as `0x${string}`) as string[],
+        country: COUNTRIES[i + 1],
+        expiry: Number((poll.result as any)[5]),
+      });
+    }
+
+    setPollsFormatted(dataList);
+  }, [pollsRaw]);
+
+  console.log("pollsFormatted", pollsFormatted);
+
+  // useEffect(() => {
+  //   console.log("isRegistered", isRegistered);
+  //   if (!isRegistered) {
+  //     router.push("/register");
+  //   } else {
+  //     //TODO make api call to get all the polls in the contract
+  //     setTimeout(() => {
+  //       setPollData(listOfMockPolls);
+  //       setIsLoading(false);
+  //     }, 4000);
+  //   }
+  // }, []);
+  const activePolls = pollsFormatted?.filter(poll => (poll?.expiry ?? 0) * 1000 > Date.now());
+  const inactivePolls = pollsFormatted?.filter(poll => (poll?.expiry ?? 0) * 1000 < Date.now());
   return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <Worldcoin />
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
+    <div className={`flex-col h-full flex-1 p-5`}>
+      {activePolls || inactivePolls ? (
+        <div className="flex flex-col">
+          <div className="flex flex-row items-center my-7 ">
+            <div className="text-3xl font-bold ">Active Polls</div>
+            <span className="h-3 w-3 animate-ping ml-3 inline-flex  rounded-full bg-green-400 opacity-75"></span>
           </div>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
+          <div className="grid lg:grid-cols-2">
+            {activePolls?.length == 0 && <div className="text-2xl text-gray-600 text-center">No Active Polls</div>}
+            {activePolls?.map(voter => (
+              <div className="my-4 mx-2" key={voter.title}>
+                <HoverBorderCard
+                  showArrow={true}
+                  click={() => {
+                    // navigate to the vote page
+                    router.push(`/vote/${voter.id}`);
+                  }}
+                >
+                  <div className="flex flex-row ">
+                    <img
+                      src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${voter.country.value}.svg`}
+                      alt="voter"
+                      className="w-14 h-14 mr-5 rounded-full border-2 shadow-xl "
+                    />
+
+                    <div className="flex flex-col">
+                      <h1 className="text-lg font-bold">{voter.title}</h1>
+                      <h1 className="text-md text-slate-500">{voter.options.length} Candidates</h1>
+                    </div>
+                  </div>
+                </HoverBorderCard>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-row items-center my-7 ">
+            <div className="text-3xl font-bold ">InActive Polls</div>
+            <span className="h-3 w-3 animate-ping ml-3 inline-flex  rounded-full bg-red-400 opacity-75"></span>
+          </div>
+
+          <div className="grid lg:grid-cols-2">
+            {inactivePolls?.length == 0 && <div className="ext-2xl text-gray-600 text-center">No In-Active Polls</div>}
+            {inactivePolls?.map(voter => (
+              <div className="mb-4 mx-2" key={voter.title}>
+                <HoverBorderCard
+                  showArrow={true}
+                  click={() => {
+                    // navigate to the vote page
+                    router.push(`/vote/${voter.id}?active=false`);
+                  }}
+                >
+                  <div className="flex flex-row ">
+                    <img
+                      src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${voter.country.value}.svg`}
+                      alt="voter"
+                      className="w-14 h-14 mr-5 rounded-full border-2 shadow-xl "
+                    />
+
+                    <div className="flex flex-col">
+                      <h1 className="text-lg font-bold">{voter.title}</h1>
+                      <h1 className="text-md text-slate-500">{voter.options.length} Candidates</h1>
+                    </div>
+                  </div>
+                </HoverBorderCard>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    </>
+      ) : (
+        <LoaderPage message="Fetching Current Poll's .... " />
+      )}
+    </div>
   );
-};
-
-export default Home;
+}
