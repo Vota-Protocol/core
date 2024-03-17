@@ -3,30 +3,31 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-// import { PubKey } from "@se-2/hardhat/domainobjs";
-import { useContractRead } from "wagmi";
+import { genRandomSalt } from "@se-2/hardhat/crypto";
+import { Keypair, Message, PCommand, PubKey } from "@se-2/hardhat/domainobjs";
+import { useContractRead, useContractWrite } from "wagmi";
 import PollAbi from "~~/abi/Poll.abi";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
 import LoaderPage from "~~/components/loader/loader";
 import { PollData } from "~~/components/poll/PollDataModel";
+import { useAuthContext } from "~~/contexts/AuthContext";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { decodeOptions } from "~~/utils/crypto";
 
 const Vote = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [loaderMessage, setLoaderMessage] = useState("Casting the vote, please wait...");
 
   const router = useRouter();
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams<{ id: string }>();
 
   const [poll, setPoll] = useState<PollData>();
+  const { keypair } = useAuthContext();
 
   const { data: pollRaw } = useScaffoldContractRead({
     contractName: "PollManager",
     functionName: "polls",
-    args: [BigInt(id as string)],
+    args: [BigInt(id)],
   });
 
   useEffect(() => {
@@ -48,51 +49,87 @@ const Vote = () => {
     setClickedIndex(clickedIndex === index ? null : index);
   };
 
-  const castVote = () => {
+  const castVote = async () => {
     console.log("Voting for candidate", clickedIndex);
     // navigate to the home page
-    setIsLoading(true);
+    try {
+      await writeAsync();
+    } catch (err) {
+      console.log(err);
+    }
     setLoaderMessage("Casting the vote, please wait...");
     setTimeout(() => {
       router.push(`/voted-success?id=${clickedIndex}`);
     }, 4000);
   };
 
-  // const [pollContractAddress, setPollContractAddress] = useState<Address>();
-  const pollId = 0n;
-
-  const { data: pollContractAddress } = useScaffoldContractRead({
-    contractName: "MACI",
-    functionName: "getPoll",
-    args: [pollId],
-  });
-
-  console.log(pollContractAddress);
-
   const { data: maxValues } = useContractRead({
     abi: PollAbi,
-    address: pollContractAddress,
+    address: pollRaw?.[4]?.poll,
     functionName: "maxValues",
     args: [],
   });
 
   const { data: coordinatorPubKeyResult } = useContractRead({
     abi: PollAbi,
-    address: pollContractAddress,
+    address: pollRaw?.[4]?.poll,
     functionName: "coordinatorPubKey",
     args: [],
   });
 
-  // const {} = useContractWrite({
-  //   abi: PollAbi,
-  //   address: pollContractAddress,
-  //   functionName: "publishMessage",
-  //   args: [message.asContractParam(), encKeypair.pubKey.asContractParam()]
-  // })
+  const [message, setMessage] = useState<{ message: Message; encKeyPair: Keypair }>();
 
-  // const castVoteImpl = () => {};
+  console.log("message", message);
 
-  console.log(maxValues);
+  const { writeAsync, isLoading } = useContractWrite({
+    abi: PollAbi,
+    address: pollRaw?.[4]?.poll,
+    functionName: "publishMessage",
+    args: [message?.message.asContractParam(), message?.encKeyPair.pubKey.asContractParam()],
+  });
+
+  const [coordinatorPubKey, setCoordinatorPubKey] = useState<PubKey>();
+
+  useEffect(() => {
+    if (!coordinatorPubKeyResult) {
+      return;
+    }
+
+    const coordinatorPubKey_ = new PubKey([
+      BigInt((coordinatorPubKeyResult as any)[0].toString()),
+      BigInt((coordinatorPubKeyResult as any)[1].toString()),
+    ]);
+
+    setCoordinatorPubKey(coordinatorPubKey_);
+
+    console.log("p", coordinatorPubKey);
+  }, [coordinatorPubKeyResult]);
+
+  useEffect(() => {
+    if (!clickedIndex || !coordinatorPubKey || !keypair) {
+      return;
+    }
+
+    const command: PCommand = new PCommand(
+      1n, // stateindex
+      keypair.pubKey, // userMaciPubKey
+      BigInt(clickedIndex),
+      1n,
+      1n,
+      BigInt(id),
+      genRandomSalt(),
+    );
+
+    const signature = command.sign(keypair.privKey);
+
+    const encKeyPair = new Keypair();
+
+    const message = command.encrypt(signature, Keypair.genEcdhSharedKey(encKeyPair.privKey, coordinatorPubKey));
+
+    setMessage({ message, encKeyPair });
+  }, [clickedIndex, coordinatorPubKey, keypair]);
+
+  console.log(maxValues && (maxValues as any)[1]);
   console.log(coordinatorPubKeyResult);
 
   // const candidates = ["Candidate 1", "Candidate 2", "Candidate 3"];
