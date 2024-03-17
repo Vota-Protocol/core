@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { genRandomSalt } from "@se-2/hardhat/crypto";
 import { Keypair, Message, PCommand, PubKey } from "@se-2/hardhat/domainobjs";
 import toast from "react-hot-toast";
 import { useContractRead, useContractWrite } from "wagmi";
 import PollAbi from "~~/abi/Poll.abi";
+import { Timer } from "~~/components/Timer";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
 import LoaderPage from "~~/components/loader/loader";
@@ -22,8 +24,11 @@ const Vote = () => {
 
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const isActive = (searchParams.get("active") ?? "true") == "true";
 
   const [poll, setPoll] = useState<PollData>();
+  const [randomVotes, setRandomVotes] = useState<number[]>([]);
   const { keypair } = useAuthContext();
 
   const { data: pollRaw } = useScaffoldContractRead({
@@ -41,12 +46,17 @@ const Vote = () => {
       return;
     }
 
-    setPoll({
+    const data: PollData = {
       id: Number(id),
       title: pollRaw[0],
       options: decodeOptions(pollRaw[1] as `0x${string}`) as string[],
       country: { title: "India", value: "IN" },
-    });
+      expiry: Number(pollRaw[5]),
+    };
+    setPoll(data);
+    console.log("randomVotes pollraw", pollRaw);
+    setRandomVotes(generateRandomVotes(data.options.length));
+    console.log("randomVotes", randomVotes);
   }, [pollRaw]);
 
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
@@ -114,6 +124,16 @@ const Vote = () => {
     console.log("p", coordinatorPubKey);
   }, [coordinatorPubKeyResult]);
 
+  const generateRandomVotes = (length: number) => {
+    const randomVotes = [];
+    for (let i = 0; i < length; i++) {
+      // Generate a random number between 0 and 100 representing the votes
+      const votes = Math.floor(Math.random() * 101); // Generates a random number between 0 and 100
+      randomVotes.push(votes);
+    }
+    return randomVotes;
+  };
+
   useEffect(() => {
     if (!clickedIndex || !coordinatorPubKey || !keypair) {
       return;
@@ -148,7 +168,7 @@ const Vote = () => {
         <LoaderPage message={loaderMessage} />
       ) : (
         <div className="flex h-full flex-col ">
-          <div className="flex flex-row items-center mb-5">
+          <div className="flex flex-row items-center my-5">
             <div className="text-3xl font-bold ">Vote for {poll?.title}</div>
             <img
               src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${poll?.country?.value}.svg`}
@@ -157,20 +177,46 @@ const Vote = () => {
             />
           </div>
           {poll?.options.map((candidate, index) => (
-            <div className="pb-3" key={index}>
+            <div className="pb-5" key={index}>
               <VoteCard clicked={clickedIndex === index} onClick={() => handleCardClick(index)}>
                 <div>{candidate}</div>
               </VoteCard>
             </div>
           ))}
-          <div className={`mt-14 ${clickedIndex !== null ? " shadow-2xl" : ""}`}>
+          <div className={`mt-5 ${clickedIndex !== null ? " shadow-2xl" : ""}`}>
             <HoverBorderCard
               click={() => {
                 castVote();
               }}
+              disabled={!isActive}
             >
-              <div className="flex justify-center w-full text-xl ">Vote Now</div>
+              <div className="flex justify-center w-full text-xl ">{isActive ? "Vote Now" : "Voting Closed"}</div>
             </HoverBorderCard>
+          </div>
+
+          <div className="flex flex-col mt-10">
+            <div className="text-3xl font-bold my-5">Results</div>
+
+            {!isActive ? (
+              poll?.options.map((option, index) => (
+                <div className="flex flex-row my-5 items-center" key={index}>
+                  <div className="text-xl">
+                    {option} total vote {randomVotes[index]}
+                  </div>
+                  <div className="w-full ml-2 bg-gray-200 h-6 rounded shadow-2xl border-2">
+                    <div
+                      className="h-full bg-[#0C1B36] rounded shadow-2xl"
+                      style={{ width: `${randomVotes[index]}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col text-gray-500 ">
+                <div className="text-xl"> Results will be displayed after the voting ends, and voting ends in </div>
+                <Timer expiryDate={(poll?.expiry ?? 0) * 1000} />
+              </div>
+            )}
           </div>
         </div>
       )}

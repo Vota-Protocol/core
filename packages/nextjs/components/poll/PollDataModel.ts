@@ -5,4 +5,5 @@ export interface PollData {
   title: string;
   options: string[];
   country: SelectMenuOption;
+  expiry?: number;
 }
