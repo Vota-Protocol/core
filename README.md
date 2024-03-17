@@ -1,7 +1,5 @@
 # VOTA
 
-```md
-
 ### Deployments & Infrastructure
 
 #### MACI
@@ -66,7 +64,7 @@ Running for smart contract `0x3Cd1f1dF7DBcda4d0BA0C6B15367425461DAfD23` on chain
     "mailbox": "0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766",
     "proxyAdmin": "0x97Bbc6bBaFa5Ce3b2FA966c121Af63bD09e940f8",
     "validatorAnnounce": "0xE6105C59480a1B7DD3E4f28153aFdbE12F4CfCD9"
-````
+
 
 ## Requirements
 
@@ -82,7 +80,7 @@ To get started with Scaffold-ETH 2, follow the steps below:
 
 1. Clone this repo & install dependencies
 
-```
+```bash
 git clone https://github.com/scaffold-eth/scaffold-eth-2.git
 cd scaffold-eth-2
 yarn install
@@ -90,7 +88,7 @@ yarn install
 
 2. Run a local network in the first terminal:
 
-```
+```bash
 yarn chain
 ```
 
@@ -98,7 +96,7 @@ This command starts a local Ethereum network using Hardhat. The network runs on 
 
 3. On a second terminal, deploy the test contract:
 
-```
+```bash
 yarn deploy
 ```
 
@@ -106,7 +104,7 @@ This command deploys a test smart contract to the local network. The contract is
 
 4. On a third terminal, start your NextJS app:
 
-```
+```bash
 yarn start
 ```
 
