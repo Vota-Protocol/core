@@ -13,7 +13,7 @@ import { contracts } from "~~/utils/scaffold-eth/contract";
 
 export default function VoterPage() {
   const router = useRouter();
-
+  const [isLoading, setIsLoading] = useState(true);
   useAuthUserOnly({});
 
   const { data: totalPolls } = useScaffoldContractRead({
@@ -27,14 +27,19 @@ export default function VoterPage() {
 
   const chainId = useChainId();
 
-  const { data: pollsRaw, isLoading } = useContractReads({
+  const { data: pollsRaw } = useContractReads({
     contracts: Array.from(Array(Number(totalPolls || 0n)).keys()).map((_, i) => ({
       address: (contracts && contracts[chainId] && contracts[chainId]["PollManager"]?.address) || undefined,
       abi: (contracts && contracts[chainId] && contracts[chainId]["PollManager"]?.abi) || undefined,
       functionName: "polls",
       args: [BigInt(i + 1)],
+      onSuccess() {
+        setIsLoading(false);
+      },
     })),
   });
+
+  console.log("isLoading in mainpage", isLoading);
 
   useEffect(() => {
     if (!pollsRaw || pollsRaw.length == 0 || pollsRaw.filter(({ status }) => status !== "success").length !== 0) {
@@ -59,7 +64,7 @@ export default function VoterPage() {
     setPollsFormatted(dataList);
   }, [pollsRaw]);
 
-  console.log(pollsFormatted);
+  console.log("pollsFormatted", pollsFormatted);
 
   // useEffect(() => {
   //   console.log("isRegistered", isRegistered);
@@ -82,9 +87,7 @@ export default function VoterPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <LoaderPage message="Fetching Current Poll's .... " />
-      ) : (
+      {pollsFormatted ? (
         <div className="grid lg:grid-cols-2">
           {pollsFormatted?.map(voter => (
             <div className="mb-4 mx-2" key={voter.title}>
@@ -111,6 +114,8 @@ export default function VoterPage() {
             </div>
           ))}
         </div>
+      ) : (
+        <LoaderPage message="Fetching Current Poll's .... " />
       )}
     </div>
   );

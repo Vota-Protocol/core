@@ -79,9 +79,15 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (!encodedProof) return;
-    writeAsync();
-    //TODO ; add a way to make it rgisteration true
-    refetchIsRegistered();
+    (async () => {
+      try {
+        await writeAsync();
+        refetchIsRegistered();
+        console.log("Registered");
+      } catch (e) {
+        console.error(e);
+      }
+    })();
   }, [encodedProof]);
 
   const style = {

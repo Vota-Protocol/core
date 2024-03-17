@@ -16,6 +16,7 @@ import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { decodeOptions } from "~~/utils/crypto";
 
 const Vote = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [loaderMessage, setLoaderMessage] = useState("Casting the vote, please wait...");
 
   const router = useRouter();
@@ -28,6 +29,9 @@ const Vote = () => {
     contractName: "PollManager",
     functionName: "polls",
     args: [BigInt(id)],
+    onSuccess() {
+      setIsLoading(false);
+    },
   });
 
   useEffect(() => {
@@ -81,7 +85,7 @@ const Vote = () => {
 
   console.log("message", message);
 
-  const { writeAsync, isLoading } = useContractWrite({
+  const { writeAsync } = useContractWrite({
     abi: PollAbi,
     address: pollRaw?.[4]?.poll,
     functionName: "publishMessage",
