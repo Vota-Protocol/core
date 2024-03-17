@@ -45,6 +45,7 @@
   },
   "packageManager": "yarn@3.2.3",
   "dependencies": {
-    "lottie-react": "^2.4.0"
+    "lottie-react": "^2.4.0",
+    "react-hot-toast": "^2.4.1"
   }
 }

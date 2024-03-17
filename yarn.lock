@@ -12655,7 +12655,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hot-toast@npm:~2.4.0":
+"react-hot-toast@npm:^2.4.1, react-hot-toast@npm:~2.4.0":
   version: 2.4.1
   resolution: "react-hot-toast@npm:2.4.1"
   dependencies:
@@ -13335,6 +13335,7 @@ __metadata:
     lint-staged: ~13.2.2
     lottie-react: ^2.4.0
     next: ~14.0.4
+    react-hot-toast: ^2.4.1
     vercel: ~32.4.1
   languageName: unknown
   linkType: soft

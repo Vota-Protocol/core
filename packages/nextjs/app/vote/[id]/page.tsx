@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { genRandomSalt } from "@se-2/hardhat/crypto";
 import { Keypair, Message, PCommand, PubKey } from "@se-2/hardhat/domainobjs";
+import toast from "react-hot-toast";
 import { useContractRead, useContractWrite } from "wagmi";
 import PollAbi from "~~/abi/Poll.abi";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
@@ -17,7 +18,7 @@ import { decodeOptions } from "~~/utils/crypto";
 
 const Vote = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [loaderMessage, setLoaderMessage] = useState("Casting the vote, please wait...");
+  const [loaderMessage, setLoaderMessage] = useState("Fetching the poll details, please wait...");
 
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -54,17 +55,21 @@ const Vote = () => {
   };
 
   const castVote = async () => {
+    setIsLoading(true);
     console.log("Voting for candidate", clickedIndex);
     // navigate to the home page
     try {
       await writeAsync();
+      setLoaderMessage("Casting the vote, please wait...");
+      setTimeout(() => {
+        router.push(`/voted-success?id=${clickedIndex}`);
+        setIsLoading(false);
+      }, 1000);
     } catch (err) {
       console.log(err);
+      setIsLoading(false);
+      toast.error("Casting vote failed, please try again");
     }
-    setLoaderMessage("Casting the vote, please wait...");
-    setTimeout(() => {
-      router.push(`/voted-success?id=${clickedIndex}`);
-    }, 4000);
   };
 
   const { data: maxValues } = useContractRead({
