@@ -6,6 +6,7 @@ const actionId = "register";
 
 const worldIdContracts: Record<string, `0x${string}`> = {
   optimismSepolia: "0x11cA3127182f7583EfC416a8771BD4d11Fae4334",
+  baseSepolia: "0x42FF98C4E85212a5D31358ACbFe76a621b50fC02",
 };
 
 const deployContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {

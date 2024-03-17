@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import { IMailbox } from "../interfaces/IMailbox.sol";
@@ -7,9 +7,12 @@ import { IWorldIDIdentityManager } from "../interfaces/IWorldIDIdentityManager.s
 import { IWorldID } from "../interfaces/IWorldID.sol";
 import { ByteHasher } from "../utilities/ByteHasher.sol";
 
-contract HyperlaneWorldcoinBridging is Ownable, IWorldIDIdentityManager, IWorldID {
-
-    using ByteHasher for bytes;
+contract HyperlaneWorldcoinBridging is
+	Ownable,
+	IWorldIDIdentityManager,
+	IWorldID
+{
+	using ByteHasher for bytes;
 
 	mapping(uint256 => bool) public registeredTokenIds;
 
@@ -30,35 +33,39 @@ contract HyperlaneWorldcoinBridging is Ownable, IWorldIDIdentityManager, IWorldI
 
 	error InvalidProver();
 
-    // @dev Config for the HyperlaneWorldcoinBridging
-    uint32 public destinationChain; // 80001 for Polygon Mumbai
-    IWorldIDIdentityManager public identityManager; // https://docs.worldcoin.org/reference/address-book
-    address public mailbox; // https://docs.hyperlane.xyz/docs/reference/contract-addresses
-    address public receiver;
-    // ToDo delete below this line
-    uint32 public origin;
-    bytes32 public sender;
-    // ToDo delete above this line
-    uint256 public latestReceivedMessage;
-    bytes32 public latestSentMessageID;
-    uint256 public receivedTime;
+	// @dev Config for the HyperlaneWorldcoinBridging
+	uint32 public destinationChain; // 80001 for Polygon Mumbai
+	IWorldIDIdentityManager public identityManager; // https://docs.worldcoin.org/reference/address-book
+	address public mailbox; // https://docs.hyperlane.xyz/docs/reference/contract-addresses
+	address public receiver;
+	// ToDo delete below this line
+	uint32 public origin;
+	bytes32 public sender;
+	// ToDo delete above this line
+	uint256 public latestReceivedMessage;
+	bytes32 public latestSentMessageID;
+	uint256 public receivedTime;
 
-    constructor(address initialOwner, address _mailbox, address _receiver, address _identityManager, uint32 _destinationChain, IWorldID _worldId,
+	constructor(
+		address _mailbox,
+		address _receiver,
+		address _identityManager,
+		uint32 _destinationChain,
+		IWorldID _worldId,
 		string memory _appId,
-		string memory _actionId)
-        Ownable(initialOwner)
-    {
-        mailbox = _mailbox;
-        receiver = _receiver;
-        identityManager = IWorldIDIdentityManager(_identityManager);
-        destinationChain = _destinationChain;
-        worldId = _worldId;
+		string memory _actionId
+	) {
+		mailbox = _mailbox;
+		receiver = _receiver;
+		identityManager = IWorldIDIdentityManager(_identityManager);
+		destinationChain = _destinationChain;
+		worldId = _worldId;
 		externalNullifier = abi
 			.encodePacked(abi.encodePacked(_appId).hashToField(), _actionId)
 			.hashToField();
-    }
+	}
 
-    function verifyProof(
+	function verifyProof(
 		uint256 root,
 		uint256 groupId,
 		uint256 signalHash,
@@ -66,58 +73,58 @@ contract HyperlaneWorldcoinBridging is Ownable, IWorldIDIdentityManager, IWorldI
 		uint256 externalNullifierHash,
 		uint256[8] calldata proof
 	) public view {
-    // Check Uniqueness
-    if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
+		// Check Uniqueness
+		if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
 
-    // Verify User has a valid World ID
-    worldId.verifyProof(
-        root,
-        groupId, // set to "1" in the constructor
-        abi.encodePacked(signalHash).hashToField(),
-        nullifierHash,
-        externalNullifier,
-        proof
-    );
+		// Verify User has a valid World ID
+		worldId.verifyProof(
+			root,
+			groupId, // set to "1" in the constructor
+			abi.encodePacked(signalHash).hashToField(),
+			nullifierHash,
+			externalNullifier,
+			proof
+		);
 
-    // nullifierHashes[nullifierHash] = true;
-    }
+		// nullifierHashes[nullifierHash] = true;
+	}
 
-    function latestRoot() external view returns (uint256) {
-        return latestReceivedMessage;
-    }
+	function latestRoot() external view returns (uint256) {
+		return latestReceivedMessage;
+	}
 
-    function bridgeWorldcoinID() public payable onlyOwner {
-        uint256 _merkleTreeRoot = identityManager.latestRoot();
-        IMailbox hyperMailbox = IMailbox(mailbox);
-        bytes32 messageId = hyperMailbox.dispatch{value: msg.value}(
-        destinationChain,
-        addressToBytes32(receiver),
-        abi.encodePacked(_merkleTreeRoot)
-        );
-        latestSentMessageID = messageId;
-    }
+	function bridgeWorldcoinID() public payable onlyOwner {
+		uint256 _merkleTreeRoot = identityManager.latestRoot();
+		IMailbox hyperMailbox = IMailbox(mailbox);
+		bytes32 messageId = hyperMailbox.dispatch{ value: msg.value }(
+			destinationChain,
+			addressToBytes32(receiver),
+			abi.encodePacked(_merkleTreeRoot)
+		);
+		latestSentMessageID = messageId;
+	}
 
-    function handle(
-        uint32 _origin,
-        bytes32 _sender,
-        bytes calldata _message
-    ) public onlyMailbox {
-        origin = _origin;
-        sender = _sender;
-        uint256 decodedValue = abi.decode(_message, (uint256));
-        latestReceivedMessage = decodedValue;
-        receivedTime = block.timestamp;
-    }
+	function handle(
+		uint32 _origin,
+		bytes32 _sender,
+		bytes calldata _message
+	) public onlyMailbox {
+		origin = _origin;
+		sender = _sender;
+		uint256 decodedValue = abi.decode(_message, (uint256));
+		latestReceivedMessage = decodedValue;
+		receivedTime = block.timestamp;
+	}
 
-    function addressToBytes32(address _addr) internal pure returns (bytes32) {
-        return bytes32(uint256(uint160(_addr)));
-    }
+	function addressToBytes32(address _addr) internal pure returns (bytes32) {
+		return bytes32(uint256(uint160(_addr)));
+	}
 
-    modifier onlyMailbox() {
-        require(
-            msg.sender == address(mailbox),
-            "MailboxClient: sender not mailbox"
-        );
-        _;
-    }
+	modifier onlyMailbox() {
+		require(
+			msg.sender == address(mailbox),
+			"MailboxClient: sender not mailbox"
+		);
+		_;
+	}
 }
