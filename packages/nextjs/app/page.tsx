@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useChainId, useContractReads } from "wagmi";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
+import { COUNTRIES } from "~~/components/country_picker/countries";
 import LoaderPage from "~~/components/loader/loader";
 import { PollData } from "~~/components/poll/PollDataModel";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -56,7 +57,7 @@ export default function VoterPage() {
         id: i + 1,
         title: (poll.result as any)[0] as string,
         options: decodeOptions((poll.result as any)[1] as `0x${string}`) as string[],
-        country: { title: "India", value: "IN" },
+        country: COUNTRIES[i + 1],
         expiry: Number((poll.result as any)[5]),
       });
     }

@@ -32,8 +32,8 @@ export const COUNTRIES = [
     value: "AR",
   },
   {
-    title: "Armenia",
-    value: "AM",
+    title: "United Kingdom",
+    value: "GB",
   },
   {
     title: "Aruba",
@@ -834,10 +834,6 @@ export const COUNTRIES = [
   {
     title: "United Arab Emirates",
     value: "AE",
-  },
-  {
-    title: "United Kingdom",
-    value: "GB",
   },
   {
     title: "United States",

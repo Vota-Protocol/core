@@ -12,6 +12,7 @@ import PollAbi from "~~/abi/Poll.abi";
 import { Timer } from "~~/components/Timer";
 import HoverBorderCard from "~~/components/card/HoverBorderCard";
 import VoteCard from "~~/components/card/VoteCard";
+import { COUNTRIES } from "~~/components/country_picker/countries";
 import LoaderPage from "~~/components/loader/loader";
 import { PollData } from "~~/components/poll/PollDataModel";
 import { useAuthContext } from "~~/contexts/AuthContext";
@@ -50,7 +51,7 @@ const Vote = () => {
       id: Number(id),
       title: pollRaw[0],
       options: decodeOptions(pollRaw[1] as `0x${string}`) as string[],
-      country: { title: "India", value: "IN" },
+      country: COUNTRIES[Number(id)],
       expiry: Number(pollRaw[5]),
     };
     setPoll(data);
@@ -69,12 +70,11 @@ const Vote = () => {
     console.log("Voting for candidate", clickedIndex);
     // navigate to the home page
     try {
-      await writeAsync();
       setLoaderMessage("Casting the vote, please wait...");
-      setTimeout(() => {
-        router.push(`/voted-success?id=${clickedIndex}`);
-        setIsLoading(false);
-      }, 1000);
+
+      await writeAsync();
+      router.push(`/voted-success?id=${clickedIndex}`);
+      setIsLoading(false);
     } catch (err) {
       console.log("err", err);
       setIsLoading(false);
