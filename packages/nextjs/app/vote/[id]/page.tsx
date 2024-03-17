@@ -14,7 +14,7 @@ import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { decodeOptions } from "~~/utils/crypto";
 
 const Vote = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [loaderMessage, setLoaderMessage] = useState("Casting the vote, please wait...");
 
   const router = useRouter();
@@ -27,6 +27,9 @@ const Vote = () => {
     contractName: "PollManager",
     functionName: "polls",
     args: [BigInt(id as string)],
+    onSuccess() {
+      setIsLoading(false);
+    },
   });
 
   useEffect(() => {
